@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pedidos</title>
+  <meta name="theme-color" content="#16324f">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pedidos">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="cabecera">
+    <div class="marca">
+      <img src="icons/icon-192.png" alt="" width="34" height="34">
+      <div>
+        <strong id="empresa">Pedidos</strong>
+        <span id="quien"></span>
+      </div>
+    </div>
+    <span id="estadoRed" class="chip" role="status"></span>
+  </header>
+
+  <div id="avisoInstalar" class="aviso-instalar" hidden>
+    <p id="avisoInstalarTexto"></p>
+    <div class="acciones">
+      <button type="button" id="btnInstalar" class="btn primario peque" hidden>Instalar</button>
+      <button type="button" id="btnCerrarAviso" class="btn enlace peque">Ahora no</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- ============ ACCESO ============ -->
+    <section id="vLogin" class="contenedor" hidden>
+      <div class="tarjeta acceso">
+        <h1>Acceso de comerciales</h1>
+        <p class="nota">Introduce tu PIN personal. Solo hace falta la primera vez en este dispositivo.</p>
+        <form id="fLogin" autocomplete="off">
+          <label for="pin">PIN</label>
+          <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="10" autocomplete="off" required>
+          <p id="loginMsg" class="msg-error" role="alert"></p>
+          <button class="btn primario ancho" type="submit" id="btnLogin">Entrar</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ APP ============ -->
+    <section id="vApp" hidden>
+      <nav class="pestanas" role="tablist">
+        <button type="button" role="tab" data-tab="nuevo" aria-selected="true">Nuevo pedido</button>
+        <button type="button" role="tab" data-tab="envios" aria-selected="false">Mis envíos <span id="badge" class="badge" hidden></span></button>
+      </nav>
+
+      <!-- Nuevo pedido -->
+      <form id="fPedido" class="contenedor panel" data-panel="nuevo" novalidate autocomplete="off">
+        <div id="avisoEdicion" class="aviso" hidden>
+          <span>Estás corrigiendo un pedido que aún no se ha enviado.</span>
+          <button type="button" id="btnCancelarEdicion" class="btn enlace peque">Cancelar</button>
+        </div>
+
+        <div class="campo">
+          <label for="clienteBuscar">Cliente <span class="obl">*</span></label>
+          <div class="buscador" id="buscador">
+            <input id="clienteBuscar" type="search" placeholder="Escribe nombre o código…" autocomplete="off"
+                   autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search"
+                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="clienteLista">
+            <ul id="clienteLista" class="sugerencias" role="listbox" hidden></ul>
+          </div>
+          <div id="clienteElegido" class="elegido" hidden>
+            <span class="elegido-texto"></span>
+            <button type="button" id="btnCambiarCliente" class="btn enlace peque">Cambiar</button>
+          </div>
+          <p class="msg-error" data-error="cliente"></p>
+        </div>
+
+        <fieldset class="campo">
+          <legend>Productos <span class="obl">*</span></legend>
+          <p class="nota">Una línea por producto. Cantidad y referencia o descripción.</p>
+          <div id="lineas"></div>
+          <button type="button" id="btnLinea" class="btn secundario">+ Añadir línea</button>
+          <p class="msg-error" data-error="lineas"></p>
+        </fieldset>
+
+        <div class="campo">
+          <label for="pago">Condiciones de pago</label>
+          <select id="pago"></select>
+        </div>
+
+        <div class="campo">
+          <label for="fechaEntrega">Fecha de entrega <span class="opc">(opcional)</span></label>
+          <input id="fechaEntrega" type="date">
+          <p class="msg-error" data-error="fecha"></p>
+        </div>
+
+        <div class="campo">
+          <label class="check">
+            <input id="chkDireccion" type="checkbox">
+            <span>Entregar en una dirección <b>distinta</b> a la de la ficha del cliente</span>
+          </label>
+          <textarea id="direccion" rows="2" maxlength="300" placeholder="Calle, número, población, CP" hidden></textarea>
+          <p class="msg-error" data-error="direccion"></p>
+        </div>
+
+        <div class="campo">
+          <label for="obs">Observaciones <span class="opc">(opcional)</span></label>
+          <textarea id="obs" rows="3" maxlength="1000" placeholder="Horario, persona de contacto en destino, urgencia…"></textarea>
+          <p class="nota">No incluyas datos personales que no sean necesarios para el pedido.</p>
+        </div>
+
+        <div class="pie-envio">
+          <button type="submit" class="btn primario ancho grande" id="btnEnviar">Enviar pedido</button>
+        </div>
+      </form>
+
+      <!-- Mis envíos -->
+      <div class="contenedor panel" data-panel="envios" hidden>
+        <section class="bloque">
+          <div class="bloque-titulo">
+            <h2>Pendientes de envío</h2>
+            <button type="button" id="btnReintentar" class="btn secundario peque">Reintentar ahora</button>
+          </div>
+          <div id="listaCola" class="lista"></div>
+        </section>
+        <section class="bloque">
+          <h2>Enviados y recibidos</h2>
+          <p class="nota">Pedidos confirmados por el servidor desde este dispositivo (últimos 30 días).</p>
+          <div id="listaEnviados" class="lista"></div>
+        </section>
+        <section class="bloque cuenta">
+          <p class="nota" id="infoDatos"></p>
+          <button type="button" id="btnSalir" class="btn enlace">Cerrar sesión</button>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirmaciones -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+      <div id="modalIcono" class="modal-icono" aria-hidden="true"></div>
+      <h2 id="modalTitulo"></h2>
+      <p id="modalTexto" class="modal-texto"></p>
+      <p id="modalDetalle" class="nota"></p>
+      <button type="button" id="modalOk" class="btn primario ancho">Aceptar</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><p class="contenedor">Esta app necesita JavaScript activado.</p></noscript>
+</body>
+</html>
