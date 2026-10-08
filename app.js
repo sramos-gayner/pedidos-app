@@ -708,6 +708,12 @@
     $('#empresa').textContent = CFG.EMPRESA;
     document.title = CFG.EMPRESA;
 
+    // Logo: si existe logo.png se muestra y se oculta el nombre en texto; si no, se usa el icono.
+    const logo = $('#logo');
+    const marcarLogo = () => document.body.classList.toggle('con-logo', !logo.classList.contains('es-icono') && logo.naturalWidth > 0);
+    logo.addEventListener('load', marcarLogo);
+    if (logo.complete) marcarLogo();
+
     if (!CFG.API_URL || CFG.API_URL.indexOf('PEGA_AQUI') !== -1) {
       $('#loginMsg').textContent = 'Falta configurar la dirección del servidor (API_URL en config.js).';
     }
